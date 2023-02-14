@@ -3,59 +3,80 @@
 package git
 
 import (
-	"bufio"
-	"fmt"
-	"io"
-	"os"
-	"os/exec"
+	"log"
 	"path/filepath"
+	"pre-receive/internal/utils"
 	"strconv"
 	"strings"
-	"syscall"
 )
 
 // 使用git ls-tree --full-name -r -l HEAD 获取文件信息
 // 输出格式 git ls-tree --full-name -r -l HEAD
 
-func (g *gitCommit) GetFileInfos() (res []*FileInfo, err error) {
-	var stdout io.ReadCloser
-	cmd := exec.Command("git", "ls-tree", "--full-name", "-r", "-l", g.hash)
-	cmd.Stdin = os.Stdin
-	cmd.Stderr = os.Stderr
-	stdout, err = cmd.StdoutPipe()
-	if err != nil {
-		return nil, err
-	}
-	err = cmd.Start()
-	if err != nil {
-		return nil, err
-	}
-	render := bufio.NewReader(stdout)
-	for {
-		bs, _, err := render.ReadLine()
-		if err != nil || err == io.EOF {
-			break
+func (g *gitCommit) GetFileInfos() (res []FileInfo, err error) {
+	allFileInfo := g.allFileInfo()
+	fileInfo := g.fileInfos()
+	for _, v := range allFileInfo {
+		if g.equal(v.FullPath, fileInfo) {
+			res = append(res, v)
 		}
-		fileInfo := g.cutFileInfo(string(bs))
-		if fileInfo == nil {
+	}
+	log.Printf("本次有修改的文件 %v", res)
+	return
+}
+
+func (g *gitCommit) equal(name string, files []string) bool {
+	for _, file := range files {
+		if name == file {
+			return true
+		}
+	}
+	return false
+}
+
+func (g *gitCommit) fileInfos() (res []string) {
+	output, err := utils.Exec("git", "diff-tree", "-r", "--diff-filter=ACMRT", g.hash)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	for _, line := range output {
+		name := g.cutFileInfo(line)
+		if name == "" {
 			continue
 		}
-		res = append(res, fileInfo)
-	}
-	err = cmd.Wait()
-	if err != nil {
-		return nil, err
-	}
-	exitCode := cmd.ProcessState.Sys().(syscall.WaitStatus).ExitStatus()
-	if exitCode != 0 {
-		return nil, fmt.Errorf("exit code %d", exitCode)
+		res = append(res, name)
 	}
 	return
 }
 
-func (g *gitCommit) cutFileInfo(s string) (res *FileInfo) {
+func (g *gitCommit) cutFileInfo(s string) string {
 	ss := strings.Fields(s)
-	if len(ss) < 4 {
+	if len(ss) != 6 {
+		return ""
+	}
+	return ss[5]
+}
+
+func (g *gitCommit) allFileInfo() (res []FileInfo) {
+	output, err := utils.Exec("git", "ls-tree", "--full-name", "-r", "-l", g.hash)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	for _, line := range output {
+		fileInfo := g.cutAllFileInfo(line)
+		if fileInfo == nil {
+			continue
+		}
+		res = append(res, *fileInfo)
+	}
+	return
+}
+
+func (g *gitCommit) cutAllFileInfo(s string) (res *FileInfo) {
+	ss := strings.Fields(s)
+	if len(ss) != 5 {
 		return
 	}
 
@@ -70,12 +91,13 @@ func (g *gitCommit) cutFileInfo(s string) (res *FileInfo) {
 		return
 	}
 	return &FileInfo{
-		Mode:   ss[0],
-		Type:   ss[1],
-		Object: ss[2],
-		Size:   size,
-		Name:   filepath.Base(ss[4]),
-		Path:   filepath.Dir(ss[4]),
-		Suffix: strings.ReplaceAll(filepath.Ext(ss[4]), `"`, ""),
+		Mode:     ss[0],
+		Type:     ss[1],
+		Object:   ss[2],
+		Size:     size,
+		Name:     filepath.Base(ss[4]),
+		Path:     filepath.Dir(ss[4]),
+		FullPath: ss[4],
+		Suffix:   strings.ReplaceAll(filepath.Ext(ss[4]), `"`, ""),
 	}
 }

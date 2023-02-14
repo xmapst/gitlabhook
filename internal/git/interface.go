@@ -6,7 +6,7 @@ type Interface interface {
 	GetInfo() (*Commits, error)
 	GetMsg() (string, error)
 	GetRevList() ([]string, error)
-	GetFileInfos() ([]*FileInfo, error)
+	GetFileInfos() ([]FileInfo, error)
 }
 
 type gitCommit struct {

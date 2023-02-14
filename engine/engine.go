@@ -65,6 +65,7 @@ func (e *Engine) Run() {
 		// 暂时不需要检查message的规范
 		//check.MsgStyle(702)
 
+		// 检查当前commit修改文件中的合法性
 		fileInfos, err := gitCommit.GetFileInfos()
 		if err != nil {
 			log.Println(err)

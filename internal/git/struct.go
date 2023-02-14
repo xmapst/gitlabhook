@@ -3,13 +3,14 @@
 package git
 
 type FileInfo struct {
-	Mode   string `json:"mode,omitempty"`
-	Type   string `json:"type,omitempty"`
-	Object string `json:"object,omitempty"`
-	Size   int    `json:"size,omitempty"`
-	Name   string `json:"name,omitempty"`
-	Path   string `json:"path,omitempty"`
-	Suffix string `json:"suffix,omitempty"`
+	Mode     string `json:"mode,omitempty"`
+	Type     string `json:"type,omitempty"`
+	Object   string `json:"object,omitempty"`
+	Size     int    `json:"size,omitempty"`
+	Name     string `json:"name,omitempty"`
+	Path     string `json:"path,omitempty"`
+	FullPath string `json:"fullPath,omitempty"`
+	Suffix   string `json:"suffix,omitempty"`
 }
 
 type Commits struct {

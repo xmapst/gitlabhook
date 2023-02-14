@@ -3,15 +3,15 @@
 package main
 
 import (
-    "fmt"
-    "io/ioutil"
-    "log"
-    "os"
-    "path/filepath"
-    "pre-receive/engine"
-    "pre-receive/internal/git"
-    "pre-receive/internal/gitlab"
-    "strings"
+	"fmt"
+	"io"
+	"log"
+	"os"
+	"path/filepath"
+	"pre-receive/engine"
+	"pre-receive/internal/git"
+	"pre-receive/internal/gitlab"
+	"strings"
 )
 
 var (
@@ -52,7 +52,7 @@ func init() {
 
 func main() {
 	// 在进行 push 操作时，GitLab 会调用这个钩子文件，并且从 stdin 输入三个参数，分别为 之前的版本 commit ID、push 的版本 commit ID 和 push 的分支
-	input, err := ioutil.ReadAll(os.Stdin)
+	input, err := io.ReadAll(os.Stdin)
 	if err != nil {
 		log.Fatalln(err)
 	}
@@ -88,6 +88,7 @@ func main() {
 		UserInfo:   userInfo,
 		PushUser:   pushUser,
 		RevList:    revList,
+		SkipTime:   1676427300,
 		StrictMode: true,
 		MaxBytes:   5 * 1048576, // 5MB
 	}

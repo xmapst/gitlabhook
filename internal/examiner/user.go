@@ -5,14 +5,19 @@ package examiner
 import (
 	"fmt"
 	"pre-receive/internal/failed"
+	"strings"
 )
 
+var skipUsers = []string{"github", "gitlab", "gitee", "codeup", "coding"}
+
 func (e *Examiner) SkipUser() bool {
-	if e.CommitInfo.Author.Name == "Github" {
-		return true
-	}
-	if e.CommitInfo.Committer.Name == "Github" {
-		return true
+	for _, user := range skipUsers {
+		if strings.ToLower(e.CommitInfo.Author.Name) == user {
+			return true
+		}
+		if strings.ToLower(e.CommitInfo.Committer.Name) == user {
+			return true
+		}
 	}
 	return false
 }

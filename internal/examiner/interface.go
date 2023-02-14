@@ -16,14 +16,14 @@ type Interface interface {
 	SetMessage(msg string)
 	MsgLen(int)
 	MsgStyle(code int)
-	SetFileInfo(fileInfo []*git.FileInfo)
+	SetFileInfo(fileInfo []git.FileInfo)
 	FileMaxSize(code int)
 }
 
 type Examiner struct {
 	UserInfo   *gitlab.UserInfo
 	CommitInfo *git.Commits
-	FileInfos  []*git.FileInfo
+	FileInfos  []git.FileInfo
 	Message    string
 	PushUser   string
 	MaxBytes   int

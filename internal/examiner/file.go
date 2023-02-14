@@ -17,7 +17,7 @@ var staticFileSuffixList = []string{
 	".zip", ".tar", ".gz", ".bz", ".bz2", ".xz", //压缩类型
 }
 
-func (e *Examiner) SetFileInfo(fileInfo []*git.FileInfo) {
+func (e *Examiner) SetFileInfo(fileInfo []git.FileInfo) {
 	e.FileInfos = fileInfo
 }
 
