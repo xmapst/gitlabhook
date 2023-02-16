@@ -88,7 +88,7 @@ func main() {
 		UserInfo:   userInfo,
 		PushUser:   pushUser,
 		RevList:    revList,
-		SkipTime:   1676427300,
+		SkipTime:   1676513700,
 		StrictMode: true,
 		MaxBytes:   5 * 1048576, // 5MB
 	}

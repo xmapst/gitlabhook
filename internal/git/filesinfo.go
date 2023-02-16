@@ -18,10 +18,10 @@ func (g *gitCommit) GetFileInfos() (res []FileInfo, err error) {
 	fileInfo := g.fileInfos()
 	for _, v := range allFileInfo {
 		if g.equal(v.FullPath, fileInfo) {
+			log.Printf("本次有修改的文件: %s\n", v.FullPath)
 			res = append(res, v)
 		}
 	}
-	log.Printf("本次有修改的文件 %v", res)
 	return
 }
 
@@ -79,11 +79,7 @@ func (g *gitCommit) cutAllFileInfo(s string) (res *FileInfo) {
 	if len(ss) != 5 {
 		return
 	}
-
-	switch {
-	case strings.Contains(ss[4], ".idea"):
-		return
-	case strings.Contains(ss[4], ".vscode"):
+	if strings.HasPrefix(ss[4], ".") {
 		return
 	}
 	size, err := strconv.Atoi(ss[3])

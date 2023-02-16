@@ -30,17 +30,8 @@ func (e *Engine) Run() {
 			failed.Exit(403, "can't get commit user info"+"\n"+commit+"\n"+err.Error())
 		}
 
-		// continue old commit
-		_t, err := strconv.Atoi(info.Committer.Timestamp)
-		if err != nil {
-			log.Println(err)
-			failed.Exit(500, "未知错误，请联系仓管")
-		}
-		if _t < e.SkipTime {
-			continue
-		}
-
 		check := examiner.New(examiner.Examiner{
+			Hash:       commit,
 			UserInfo:   e.UserInfo,
 			CommitInfo: info,
 			PushUser:   e.PushUser,
@@ -62,6 +53,19 @@ func (e *Engine) Run() {
 		}
 		check.SetMessage(msg)
 		check.MsgLen(701)
+
+		// continue old commit
+		_t, err := strconv.Atoi(info.Committer.Timestamp)
+		if err != nil {
+			log.Println(err)
+			failed.Exit(500, "未知错误，请联系仓管")
+		}
+
+		// 新功能生效时间
+		if _t < e.SkipTime {
+			continue
+		}
+
 		// 暂时不需要检查message的规范
 		//check.MsgStyle(702)
 
@@ -72,7 +76,7 @@ func (e *Engine) Run() {
 			failed.Exit(800, "文件列表获取失败"+"\n"+err.Error())
 		}
 		check.SetFileInfo(fileInfos)
-		check.FileMaxSize(801)
+		check.CheckFile(801)
 
 		if !e.StrictMode {
 			os.Exit(0)

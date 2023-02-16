@@ -27,7 +27,7 @@ func (e *Examiner) AuthorUser(code int) {
 		return
 	}
 	msg := fmt.Sprintf("用户名不对：%s，应为：%s", e.CommitInfo.Author.Name, e.UserInfo.Name)
-	failed.Exit(code, msg+"\n"+fmt.Sprintf(failed.CheckUser, e.UserInfo.Name))
+	failed.Exit(code, msg, "\n", fmt.Sprintf(failed.CheckUser, e.Hash, e.UserInfo.Name))
 }
 
 func (e *Examiner) CommitterUser(code int) {
@@ -35,7 +35,7 @@ func (e *Examiner) CommitterUser(code int) {
 		return
 	}
 	msg := fmt.Sprintf("用户名不对：%s，应为：%s", e.CommitInfo.Committer.Name, e.UserInfo.Name)
-	failed.Exit(code, msg+"\n"+fmt.Sprintf(failed.CheckUser, e.UserInfo.Name))
+	failed.Exit(code, msg, "\n", fmt.Sprintf(failed.CheckUser, e.Hash, e.UserInfo.Name))
 }
 
 func (e *Examiner) AuthorEmail(code int) {
@@ -43,7 +43,7 @@ func (e *Examiner) AuthorEmail(code int) {
 		return
 	}
 	msg := fmt.Sprintf("邮箱不对：%s，应为：%s", e.CommitInfo.Author.Email, e.UserInfo.Email)
-	failed.Exit(code, msg+"\n"+fmt.Sprintf(failed.CheckEmail, e.UserInfo.Email))
+	failed.Exit(code, msg, "\n", fmt.Sprintf(failed.CheckEmail, e.Hash, e.UserInfo.Email))
 }
 
 func (e *Examiner) CommitterEmail(code int) {
@@ -51,5 +51,5 @@ func (e *Examiner) CommitterEmail(code int) {
 		return
 	}
 	msg := fmt.Sprintf("邮箱不对：%s，应为：%s", e.CommitInfo.Committer.Email, e.UserInfo.Email)
-	failed.Exit(code, msg+"\n"+fmt.Sprintf(failed.CheckEmail, e.UserInfo.Email))
+	failed.Exit(code, msg, "\n", fmt.Sprintf(failed.CheckEmail, e.Hash, e.UserInfo.Email))
 }

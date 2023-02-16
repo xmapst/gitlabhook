@@ -3,6 +3,7 @@
 package examiner
 
 import (
+	"fmt"
 	"log"
 	"pre-receive/internal/failed"
 	"regexp"
@@ -15,7 +16,7 @@ func (e *Examiner) SetMessage(msg string) {
 
 func (e *Examiner) MsgLen(code int) {
 	if len(e.Message) < 8 {
-		failed.Exit(code, "commit描述太短，没有任何意义"+"\n"+failed.CheckMsgLen)
+		failed.Exit(code, fmt.Sprintf(failed.CheckMsgLen, e.Hash))
 	}
 }
 
@@ -38,7 +39,7 @@ func (e *Examiner) MsgStyle(code int) {
 	commitTypes := msgReg.FindAllStringSubmatch(e.Message, -1)
 	if len(commitTypes) != 1 {
 		log.Println("commit message样式不符合规范")
-		failed.Exit(code, "commit message样式不符合规范"+"\n"+failed.CheckMessageStyle)
+		failed.Exit(code, fmt.Sprintf(failed.CheckMessageStyle, e.Hash))
 	} else {
 		switch commitTypes[0][1] {
 		case FEAT:
@@ -52,13 +53,13 @@ func (e *Examiner) MsgStyle(code int) {
 		case HOTFIX:
 		default:
 			if !strings.HasPrefix(e.Message, "Merge branch") {
-				failed.Exit(code, "commit message样式不符合规范"+"\n"+failed.CheckMessageStyle)
+				failed.Exit(code, fmt.Sprintf(failed.CheckMessageStyle, e.Hash))
 			}
 		}
 
 		// check message length
 		if len(commitTypes[0][4]) < 8 {
-			failed.Exit(code, "commit描述太短，没有任何意义"+"\n"+failed.CheckMsgLen)
+			failed.Exit(code, fmt.Sprintf(failed.CheckMsgLen, e.Hash))
 		}
 	}
 }

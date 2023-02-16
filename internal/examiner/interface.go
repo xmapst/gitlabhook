@@ -17,16 +17,18 @@ type Interface interface {
 	MsgLen(int)
 	MsgStyle(code int)
 	SetFileInfo(fileInfo []git.FileInfo)
-	FileMaxSize(code int)
+	CheckFile(code int)
 }
 
 type Examiner struct {
+	Hash       string
 	UserInfo   *gitlab.UserInfo
 	CommitInfo *git.Commits
 	FileInfos  []git.FileInfo
 	Message    string
 	PushUser   string
 	MaxBytes   int
+	code       int
 }
 
 func New(e Examiner) Interface {
